@@ -30,9 +30,12 @@ const userSchema = new Schema({
         default: ["Subscriber"],
         enum: ["Subscriber", "Instructor", "Admin"]
     },
-    stripe_account_id: "",
-    stripe_seller: {},
-    stripeSession: {},
+    paystack_account_id: "",
+
+    paystack_seller: {},
+
+    paystackSession: {},
+    
     passwordResetCode: {
         data: String,
         default: ""

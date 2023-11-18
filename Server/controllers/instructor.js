@@ -7,7 +7,7 @@ const paystackClient = paystack(process.env.PAYSTACK_SECRET_KEY);
 export const makeInstructor = async (req, res) => {
 
     const info = req.body;
-    console.log(info);
+
     // find user from db
     const user = await User.findById(req.body.user._id).exec();
     // console.log(user);
@@ -36,25 +36,37 @@ export const makeInstructor = async (req, res) => {
 
     if (user.paystack_account_id){
         res.send(user);
+    };
+}
+
+
+export const getAccountStatus = async (req, res) => {
+
+    try{
+        const user = await User.findById(req.body.user._id).exec();
+        const id = user.paystack_account_id // I don't understand why req.body.user._id cannot retrieve the id itself;
+        
+        
+        const account = await paystackClient.subaccount.get({id})
+
+        
+        if(!account.status){
+            return res.status(401).send("Unauthorized");
+        } else {
+            const statusUpdated = await User.findByIdAndUpdate(
+                user._id,
+                {
+                    paystack_seller: account,
+                    $addToSet: { role: "Instructor"},
+                },
+                {new: true}
+            ).select("-password").exec();
+            statusUpdated.password = undefined;
+
+            res.json(statusUpdated);
+        }
+
+    } catch (err) {
+        console.log(err);
     }
-    
-
-
-    // create account link based on account id(frontend complete onboarding)
-    // res.json("https://api.paystack.co/subaccount/:993952");
-    // const accountLink = await paystackClient.misc.createAccountLink({
-    //     account: user.paystack_account_id,
-    //     refresh_url: process.env.PAYSTACK_REDIRECT_URL,
-    //     return_url: process.env.PAYSTACK_REDIRECT_URL,
-    //     type: 'account'
-    // });
-
-    
-    // console.log(accountLink);
-    // // Send the account link as a JSON response to the frontend
-    // res.json({ accountLink: accountLink.data.data });
-   
-
-    //pre-fill any info such as email, then send url response to frontend.
-    // send the account link as json response to frontend. 
 }

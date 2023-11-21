@@ -37,12 +37,12 @@ const TopNav = () => {
     }
 
     return (
-        <Menu mode="horizontal" selectedKeys={[current]}>
+        <Menu mode="horizontal" selectedKeys={[current]} className="mb-2">
             <Item key="/" onClick={(e) => setCurrent(e.key)} icon={<AppstoreOutlined />}>
                 <Link href="/" >App</Link>
             </Item>
 
-            {user && user.role && user.role.includes("instructor")
+            {user && user.role && user.role.includes("Instructor")
                 ?
                 (<Item key="/instructor/course/create" onClick={(e) => setCurrent(e.key)} icon={<CarryOutOutlined />}>
                     <Link href="/instructor/course/create">Create Course</Link>
@@ -66,8 +66,18 @@ const TopNav = () => {
                 </>
             )}
 
+            {user && user.role && user.role.includes("Instructor") &&
+                (
+                    <>
+                        <Item key="login" onClick={(e) => setCurrent(e.key)} style={{ marginLeft: 'auto'}} icon={<LoginOutlined />}>
+                            <Link href="/instructor">Instructor</Link>
+                        </Item>
+                    </>
+                )
+            }
+
             {user !== null && (
-                <SubMenu icon={<CoffeeOutlined />} title={user && user.name} style={{ marginLeft: 'auto' }}>
+                <SubMenu icon={<CoffeeOutlined />} title={user && user.name} style={{ marginLeft: '20px' }}>
                     <ItemGroup>
                         <Item key="/user">
                             <Link href="/user">Dashboard</Link>
@@ -79,6 +89,8 @@ const TopNav = () => {
                 </SubMenu>
 
             )}
+
+
         </Menu>
     );
 };
